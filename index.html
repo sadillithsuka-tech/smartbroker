@@ -7,6 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
+    <!-- Firebase core SDK scripts -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -16,6 +17,7 @@
 </head>
 <body class="bg-zinc-950 font-sans text-zinc-900 min-h-screen flex items-center justify-center">
 
+    <!-- SECURITY LOCK SCREEN -->
     <div id="lock-screen" class="bg-white p-8 rounded-2xl shadow-2xl border-t-8 border-red-600 max-w-md w-full mx-4 text-center">
         <div class="bg-red-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg animate-pulse">
             <i class="fas fa-user-shield text-3xl"></i>
@@ -33,6 +35,7 @@
         </form>
     </div>
 
+    <!-- MAIN PORTAL DASHBOARD -->
     <div id="main-portal" class="w-full min-h-screen bg-zinc-50 hidden flex flex-col">
         <nav class="bg-black text-white px-4 md:px-8 py-4 flex justify-between items-center shadow-xl border-b-4 border-red-600 sticky top-0 z-50">
             <div class="flex items-center space-x-3">
@@ -54,6 +57,7 @@
                 </p>
             </div>
 
+            <!-- ADMIN FORM SECTION -->
             <section id="admin-form-section" class="bg-white p-6 rounded-2xl shadow-xl border-2 border-red-600 hidden">
                 <div class="flex justify-between items-center border-b pb-3 mb-4">
                     <h2 class="text-lg font-black uppercase text-red-600 flex items-center gap-2">
@@ -79,6 +83,7 @@
                 </form>
             </section>
 
+            <!-- LIVE FEED -->
             <div>
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <h1 class="text-xl font-black uppercase text-black flex items-center gap-2 tracking-tight">
@@ -126,29 +131,31 @@
             buildGrid(localInventoryArray);
         });
 
-        // 🛡️ Registration Number Verification Logic (SB0001 - SB1000)
+        // 🛡️ Fixed Registration Number Verification Logic (SB0001 - SB1000)
         function verifyStudent(event) {
             event.preventDefault();
-            var typedKey = document.getElementById('student-key').value.trim().toUpperCase();
             
-            // Regex Pattern to check if string matches SB followed by exactly 4 digits (e.g. SB0001)
-            var pattern = /^SB\d{4}$/;
+            // Input එකේ තියෙන space අයින් කරලා, කැපිටල් කරලා ගන්නවා
+            var typedKey = document.getElementById('student-key').value.replace(/\s+/g, '').toUpperCase();
+            
+            // මුල් අකුරු දෙක SB ද කියලා බලනවා
+            if (typedKey.indexOf("SB") === 0) {
+                // SB කෑල්ල අයින් කරලා ඉතිරි නම්බර් එක විතරක් ගන්නවා (e.g. "0001" හෝ "1000")
+                var numString = typedKey.substring(2);
+                var numPart = parseInt(numString, 10);
 
-            if (pattern.test(typedKey)) {
-                // Extract number portion and convert to an integer (e.g. "0045" -> 45)
-                var numPart = parseInt(typedKey.substring(2), 10);
-
-                if (numPart >= 1 && numPart <= 1000) {
+                // නම්බර් එක 1 සහ 1000 අතරද, ඒ වගේම දිග හරියටම අකුරු/ඉලක්කම් 6ක්ද කියලා චෙක් කරනවා
+                if (!isNaN(numPart) && numPart >= 1 && numPart <= 1000 && typedKey.length >= 5 && typedKey.length <= 6) {
                     // Access Granted
                     document.getElementById('lock-screen').classList.add('hidden');
                     document.getElementById('main-portal').classList.remove('hidden');
-                    document.getElementById('user-display').innerText = "Student: " + typedKey;
+                    document.getElementById('user-display').innerText = "Student ID: " + typedKey;
                     document.body.className = "bg-zinc-50 min-h-screen flex flex-col";
                     return;
                 }
             }
             
-            alert("❌ Invalid Registration Number! Please check your ID format (e.g., SB0001 - SB1000)");
+            alert("❌ Invalid ID! Please type your registration number correctly (e.g., SB0001 to SB1000).");
         }
 
         function toggleAdminMode() {
@@ -227,7 +234,7 @@
                                         '<span class="text-[10px] font-bold uppercase text-red-500 block truncate">Broker Comm</span>' +
                                         '<span class="text-xs sm:text-sm font-black text-red-600 block truncate">LKR ' + fComm + '</span>' +
                                     '</div>' +
-                                '</div>' +
+                                </div>' +
                                 '<div class="flex gap-2 items-center">' +
                                     tapDetails(cleanPhone, vehicle.ownerContact) +
                                     deleteBtn +
