@@ -6,12 +6,18 @@
     <title>SmartBroker.lk - Premium Student Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase core SDK scripts -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
     <style>
         .theme-card { background-color: #ffffff; border: 1px solid #e4e4e7; }
     </style>
 </head>
 <body class="bg-zinc-950 font-sans text-zinc-900 min-h-screen flex items-center justify-center">
 
+    <!-- SECURITY LOCK SCREEN -->
     <div id="lock-screen" class="bg-white p-8 rounded-2xl shadow-2xl border-t-8 border-red-600 max-w-md w-full mx-4 text-center">
         <div class="bg-red-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg animate-pulse">
             <i class="fas fa-shield-alt text-3xl"></i>
@@ -29,8 +35,8 @@
         </form>
     </div>
 
+    <!-- MAIN PORTAL DASHBOARD -->
     <div id="main-portal" class="w-full min-h-screen bg-zinc-50 hidden flex flex-col">
-        
         <nav class="bg-black text-white px-4 md:px-8 py-4 flex justify-between items-center shadow-xl border-b-4 border-red-600 sticky top-0 z-50">
             <div class="flex items-center space-x-3">
                 <div class="bg-red-600 text-white px-2.5 py-1 rounded-lg font-black tracking-wider text-xl">SB</div>
@@ -42,13 +48,13 @@
         </nav>
 
         <div class="max-w-7xl mx-auto p-4 md:p-6 space-y-6 w-full flex-1">
-            
             <div class="bg-gradient-to-r from-red-700 to-black text-white p-4 rounded-xl shadow-lg flex items-center gap-3 border border-red-500/20">
                 <p class="text-xs md:text-sm font-semibold leading-relaxed">
                     💡 <span class="text-red-300 font-bold">වැදගත් නිවේදනය:</span> මෙහි ඇති සියලුම වාහන වල විකුණුම් මිල (Price) සහ ඔබේ කොමිස් මුදල (Commission Amount) වාහන අයිතිකරු සමඟ සාකච්ඡා කර වෙනස් කර ගැනීමට ඔබට පූර්ණ හැකියාව ඇත!
                 </p>
             </div>
 
+            <!-- ADMIN FORM SECTION -->
             <section id="admin-form-section" class="bg-white p-6 rounded-2xl shadow-xl border-2 border-red-600 hidden">
                 <div class="flex justify-between items-center border-b pb-3 mb-4">
                     <h2 class="text-lg font-black uppercase text-red-600 flex items-center gap-2">
@@ -65,7 +71,7 @@
                     <input type="text" id="location" required placeholder="Location (e.g. Colombo)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600">
                     <input type="text" id="owner-contact" required placeholder="Seller Phone (e.g. 0771234567)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600 font-bold">
                     <input type="text" id="commission" required placeholder="Commission (e.g. 50000)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600 font-bold">
-                    <input type="file" id="image-input" accept="image/*" class="text-sm p-2 border rounded-xl bg-zinc-50">
+                    <input type="text" id="image-url" placeholder="Image URL Link (Optional)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600">
                     <input type="text" id="notes" required placeholder="Additional Inspection Notes" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600 md:col-span-3">
                     
                     <div class="md:col-span-3 flex justify-end gap-2 pt-2">
@@ -74,6 +80,7 @@
                 </form>
             </section>
 
+            <!-- LIVE FEED -->
             <div>
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
                     <h1 class="text-xl font-black uppercase text-black flex items-center gap-2 tracking-tight">
@@ -81,9 +88,7 @@
                     </h1>
                     <input type="text" id="search-bar" onkeyup="filterVehicles()" placeholder="Search brand, model or location..." class="w-full sm:w-72 p-2.5 text-xs border border-zinc-300 rounded-xl focus:outline-none focus:border-red-600 bg-white shadow-sm">
                 </div>
-                
-                <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    </div>
+                <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
         </div>
         
@@ -96,19 +101,33 @@
         var STUDENT_PASSKEY = "MEMBER77"; 
         var ADMIN_PIN = "ADMIN99"; 
         var IS_ADMIN = false;
+        var localInventoryArray = [];
 
-        var localInventoryArray = [
-            { brand: "Toyota", model: "Prius S-Grade 2018", price: "7450000", details: "82,000 km • Hybrid 1800cc", location: "Colombo", notes: "Battery health 84%, immaculate interior, 2nd owner.", image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80", ownerContact: "0771234567", commission: "80000" },
-            { brand: "Suzuki", model: "Wagon R FZ 2017", price: "4150000", details: "65,000 km • Safety Package", location: "Gampaha", notes: "Original paint, zero accidents, newly replaced auxiliary battery.", image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=600&q=80", ownerContact: "0719876543", commission: "45000" },
-            { brand: "Nissan", model: "Caravan NV350 2015", price: "8900000", details: "120,000 km • Diesel 5-Door", location: "Kandy", notes: "Dual AC, Super Long body, ideal for tourist transport setups.", image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80", ownerContact: "0751112223", commission: "120000" },
-            { brand: "Honda", model: "Vezel Z-Grade 2015", price: "6850000", details: "91,000 km • Orange Package", location: "Kurunegala", notes: "Clutch actuator oil changed regularly. Dual zone climate.", image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80", ownerContact: "0773334445", commission: "70000" },
-            { brand: "Toyota", model: "Aqua G-Sports 2014", price: "4950000", details: "104,000 km • Push Start Gs", location: "Kalutara", notes: "Full bodykit, leather bucket seats, customized alloy wheels.", image: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=600&q=80", ownerContact: "0727778889", commission: "50000" },
-            { brand: "Mitsubishi", model: "Montero Sport 2012", price: "11500000", details: "140,000 km • 4WD Automatic", location: "Matara", notes: "Sunroof, leather electric seats, sound system upgraded.", image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80", ownerContact: "0765554443", commission: "150000" },
-            { brand: "Mercedes-Benz", model: "C200 AMG Line 2016", price: "16800000", details: "58,000 km • Premium Plus", location: "Colombo", notes: "Panroof, Burmester sound system, agents maintained throughout.", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&w=600&q=80", ownerContact: "0774441112", commission: "250000" },
-            { brand: "BMW", model: "320i Luxury 2014", price: "9200000", details: "78,000 km • TwinPower Turbo", location: "Negombo", notes: "Beige leather interior, memory seats, excellent running condition.", image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80", ownerContact: "0712223334", commission: "100000" },
-            { brand: "Toyota", model: "Axio WxB 2017", price: "6975000", details: "72,000 km • Hybrid LED", location: "Galle", notes: "Black interior, safety sense radar active, original multi-setup.", image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80", ownerContact: "0779998887", commission: "65000" },
-            { brand: "Honda", model: "Fit GP5 Comfort 2014", price: "4450000", details: "95,000 km • Cruise Control", location: "Kadawatha", notes: "All service logs available, hybrid system scanning done recently.", image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80", ownerContact: "0704445556", commission: "40000" }
-        ];
+        // ✅ Sadilගේ Firebase Config Keys ඇතුළත් කර ඇත
+        const firebaseConfig = {
+          apiKey: "AIzaSyCIDBUARBHWZLUXZH2vMODVH8ZYX3k23qI",
+          authDomain: "smartbroker55.firebaseapp.com",
+          databaseURL: "https://smartbroker55-default-rtdb.firebaseio.com",
+          projectId: "smartbroker55",
+          storageBucket: "smartbroker55.firebasestorage.app",
+          messagingSenderId: "974640589922",
+          appId: "1:974640589922:web:c4ca56d10806115eacf53b"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        var database = firebase.database();
+
+        // Listen for Realtime Database updates
+        database.ref('vehicles').on('value', function(snapshot) {
+            localInventoryArray = [];
+            snapshot.forEach(function(childSnapshot) {
+                var item = childSnapshot.val();
+                item.key = childSnapshot.key; 
+                localInventoryArray.unshift(item); 
+            });
+            buildGrid(localInventoryArray);
+        });
 
         function verifyStudent(event) {
             event.preventDefault();
@@ -116,7 +135,6 @@
                 document.getElementById('lock-screen').classList.add('hidden');
                 document.getElementById('main-portal').classList.remove('hidden');
                 document.body.className = "bg-zinc-50 min-h-screen flex flex-col";
-                buildGrid(localInventoryArray);
             } else {
                 alert("❌ Invalid Student Access Key!");
             }
@@ -146,7 +164,6 @@
             return parseInt(String(val).replace(/,/g, '')).toLocaleString('en-US');
         }
 
-        // FULLY CLEANED GRID BUILDER WITHOUT ANY BACKTICKS
         function buildGrid(dataList) {
             var grid = document.getElementById('inventory-grid');
             grid.innerHTML = ""; 
@@ -161,6 +178,8 @@
                 if(cleanPhone.indexOf('0') === 0) {
                     cleanPhone = '94' + cleanPhone.substring(1);
                 }
+
+                var deleteBtn = IS_ADMIN ? '<button onclick="deleteVehicle(\'' + vehicle.key + '\')" class="bg-zinc-200 text-zinc-700 p-2.5 rounded-xl hover:bg-red-600 hover:text-white transition"><i class="fas fa-trash"></i></button>' : '';
 
                 var cardHTML = 
                     '<div class="theme-card rounded-2xl shadow-md flex flex-col overflow-hidden hover:shadow-2xl transition-all duration-300 bg-white">' +
@@ -198,7 +217,10 @@
                                         '<span class="text-xs sm:text-sm font-black text-red-600 block truncate">LKR ' + fComm + '</span>' +
                                     '</div>' +
                                 '</div>' +
-                                tapDetails(cleanPhone, vehicle.ownerContact) +
+                                '<div class="flex gap-2 items-center">' +
+                                    tapDetails(cleanPhone, vehicle.ownerContact) +
+                                    deleteBtn +
+                                '</div>' +
                             '</div>' +
                         '</div>' +
                     '</div>';
@@ -207,9 +229,8 @@
             }
         }
 
-        // FIXED BUTTON GENERATOR: SECURED MOBILE FLEX-ROW
         function tapDetails(cleanPhone, rawPhone) {
-            return '<div class="flex flex-row gap-2 w-full justify-between items-stretch">' +
+            return '<div class="flex flex-row gap-2 flex-1 justify-between items-stretch">' +
                 '<a href="tel:' + rawPhone + '" class="flex-1 bg-black hover:bg-zinc-800 text-white text-center font-black py-3 rounded-xl text-[11px] uppercase tracking-wider flex items-center justify-center gap-1 transition px-1 whitespace-nowrap min-w-0">' +
                     '<i class="fas fa-phone-alt text-red-500 text-xs shrink-0"></i> <span class="truncate">Call Owner</span>' +
                 '</a>' +
@@ -229,31 +250,30 @@
             var ownerContact = document.getElementById('owner-contact').value;
             var commission = document.getElementById('commission').value;
             var notes = document.getElementById('notes').value;
-            var imageInput = document.getElementById('image-input');
+            var typedImg = document.getElementById('image-url').value;
 
-            var defaultImg = "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80";
+            var defaultImg = typedImg ? typedImg : "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80";
 
-            var newObj = {
+            var newAsset = {
                 brand: brand, model: model, price: price, details: details,
                 location: location, notes: notes, image: defaultImg,
                 ownerContact: ownerContact, commission: commission
             };
 
-            if (imageInput.files && imageInput.files[0]) {
-                var reader = new FileReader();
-                reader.onload = function(e) {
-                    newObj.image = e.target.result;
-                    localInventoryArray.unshift(newObj);
-                    buildGrid(localInventoryArray);
-                    document.getElementById('vehicle-form').reset();
-                    closeAdminForm();
-                };
-                reader.readAsDataURL(imageInput.files[0]);
-            } else {
-                localInventoryArray.unshift(newObj);
-                buildGrid(localInventoryArray);
+            database.ref('vehicles').push(newAsset).then(function() {
                 document.getElementById('vehicle-form').reset();
                 closeAdminForm();
+                alert("🚀 Asset Published Live Globally!");
+            }).catch(function(error) {
+                alert("❌ Database Error: " + error.message);
+            });
+        }
+
+        function deleteVehicle(key) {
+            if(confirm("Are you sure you want to completely erase this asset?")) {
+                database.ref('vehicles/' + key).remove().then(function() {
+                    alert("🗑️ Vehicle Deleted successfully!");
+                });
             }
         }
 
