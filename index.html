@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartBroker.lk - Premium Student Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .theme-card { background-color: #ffffff; border: 1px solid #e4e4e7; }
+    </style>
+</head>
+<body class="bg-zinc-950 font-sans text-zinc-900 min-h-screen flex items-center justify-center">
+
+    <div id="lock-screen" class="bg-white p-8 rounded-2xl shadow-2xl border-t-8 border-red-600 max-w-md w-full mx-4 text-center">
+        <div class="bg-red-600 text-white w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg animate-pulse">
+            <i class="fas fa-shield-alt text-3xl"></i>
+        </div>
+        <h2 class="text-3xl font-black tracking-tight text-black uppercase">smartbroker<span class="text-red-600">.lk</span></h2>
+        <p class="text-xs text-zinc-500 mt-1 mb-6 font-semibold tracking-wider uppercase">Student Access Secured</p>
+        
+        <form onsubmit="verifyStudent(event)" class="space-y-4">
+            <div>
+                <input type="password" id="student-key" required placeholder="ENTER STUDENT ACCESS KEY" class="w-full text-center font-bold tracking-widest text-lg p-3.5 border-2 border-zinc-300 rounded-xl focus:outline-none focus:border-red-600 transition">
+            </div>
+            <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-black py-3.5 rounded-xl shadow uppercase tracking-wider text-sm transition-all">
+                Unlock Dashboard <i class="fas fa-bolt ml-1"></i>
+            </button>
+        </form>
+    </div>
+
+    <div id="main-portal" class="w-full min-h-screen bg-zinc-50 hidden flex flex-col">
+        
+        <nav class="bg-black text-white px-4 md:px-8 py-4 flex justify-between items-center shadow-xl border-b-4 border-red-600 sticky top-0 z-50">
+            <div class="flex items-center space-x-3">
+                <div class="bg-red-600 text-white px-2.5 py-1 rounded-lg font-black tracking-wider text-xl">SB</div>
+                <span class="text-xl md:text-2xl font-black tracking-tighter text-white">SMART<span class="text-red-500">BROKER</span>.LK</span>
+            </div>
+            <button class="bg-zinc-900 hover:bg-red-600 hover:text-white text-zinc-400 text-xs font-bold px-4 py-2.5 rounded-xl transition-all border border-zinc-800 flex items-center gap-2" onclick="toggleAdminMode()">
+                <i class="fas fa-lock text-red-500"></i> Admin Console
+            </button>
+        </nav>
+
+        <div class="max-w-7xl mx-auto p-4 md:p-6 space-y-6 w-full flex-1">
+            
+            <div class="bg-gradient-to-r from-red-700 to-black text-white p-4 rounded-xl shadow-lg flex items-center gap-3 border border-red-500/20">
+                <p class="text-xs md:text-sm font-semibold leading-relaxed">
+                    💡 <span class="text-red-300 font-bold">වැදගත් නිවේදනය:</span> මෙහි ඇති සියලුම වාහන වල විකුණුම් මිල (Price) සහ ඔබේ කොමිස් මුදල (Commission Amount) වාහන අයිතිකරු සමඟ සාකච්ඡා කර වෙනස් කර ගැනීමට ඔබට පූර්ණ හැකියාව ඇත!
+                </p>
+            </div>
+
+            <section id="admin-form-section" class="bg-white p-6 rounded-2xl shadow-xl border-2 border-red-600 hidden">
+                <div class="flex justify-between items-center border-b pb-3 mb-4">
+                    <h2 class="text-lg font-black uppercase text-red-600 flex items-center gap-2">
+                        <i class="fas fa-plus-circle"></i> Add New Vehicle Asset
+                    </h2>
+                    <button onclick="closeAdminForm()" class="text-zinc-400 hover:text-black"><i class="fas fa-times-circle text-xl"></i></button>
+                </div>
+                
+                <form id="vehicle-form" onsubmit="secureAddVehicle(event)" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <input type="text" id="brand" required placeholder="Brand (e.g. Toyota)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600">
+                    <input type="text" id="model" required placeholder="Model (e.g. Prius S Grade)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600">
+                    <input type="text" id="price" required placeholder="Price (e.g. 7450000)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600">
+                    <input type="text" id="details" required placeholder="Specs (e.g. 82k km, 2018)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600">
+                    <input type="text" id="location" required placeholder="Location (e.g. Colombo)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600">
+                    <input type="text" id="owner-contact" required placeholder="Seller Phone (e.g. 0771234567)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600 font-bold">
+                    <input type="text" id="commission" required placeholder="Commission (e.g. 50000)" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600 font-bold">
+                    <input type="file" id="image-input" accept="image/*" class="text-sm p-2 border rounded-xl bg-zinc-50">
+                    <input type="text" id="notes" required placeholder="Additional Inspection Notes" class="text-sm p-3 border rounded-xl focus:outline-none focus:border-red-600 md:col-span-3">
+                    
+                    <div class="md:col-span-3 flex justify-end gap-2 pt-2">
+                        <button type="submit" class="w-full md:w-auto bg-red-600 hover:bg-red-700 text-white font-bold text-sm px-8 py-3 rounded-xl uppercase tracking-wider transition">Publish Live</button>
+                    </div>
+                </form>
+            </section>
+
+            <div>
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <h1 class="text-xl font-black uppercase text-black flex items-center gap-2 tracking-tight">
+                        <i class="fas fa-layer-group text-red-600"></i> Active Inventory Stock Feed
+                    </h1>
+                    <input type="text" id="search-bar" onkeyup="filterVehicles()" placeholder="Search brand, model or location..." class="w-full sm:w-72 p-2.5 text-xs border border-zinc-300 rounded-xl focus:outline-none focus:border-red-600 bg-white shadow-sm">
+                </div>
+                
+                <div id="inventory-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    </div>
+            </div>
+        </div>
+        
+        <footer class="bg-black text-zinc-500 text-center py-4 text-xs font-mono border-t border-zinc-900 mt-auto">
+            © 2026 smartbroker.lk • Authorized Students Portal Pipeline
+        </footer>
+    </div>
+
+    <script>
+        var STUDENT_PASSKEY = "MEMBER77"; 
+        var ADMIN_PIN = "ADMIN99"; 
+        var IS_ADMIN = false;
+
+        var localInventoryArray = [
+            { brand: "Toyota", model: "Prius S-Grade 2018", price: "7450000", details: "82,000 km • Hybrid 1800cc", location: "Colombo", notes: "Battery health 84%, immaculate interior, 2nd owner.", image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80", ownerContact: "0771234567", commission: "80000" },
+            { brand: "Suzuki", model: "Wagon R FZ 2017", price: "4150000", details: "65,000 km • Safety Package", location: "Gampaha", notes: "Original paint, zero accidents, newly replaced auxiliary battery.", image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?auto=format&fit=crop&w=600&q=80", ownerContact: "0719876543", commission: "45000" },
+            { brand: "Nissan", model: "Caravan NV350 2015", price: "8900000", details: "120,000 km • Diesel 5-Door", location: "Kandy", notes: "Dual AC, Super Long body, ideal for tourist transport setups.", image: "https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?auto=format&fit=crop&w=600&q=80", ownerContact: "0751112223", commission: "120000" },
+            { brand: "Honda", model: "Vezel Z-Grade 2015", price: "6850000", details: "91,000 km • Orange Package", location: "Kurunegala", notes: "Clutch actuator oil changed regularly. Dual zone climate.", image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80", ownerContact: "0773334445", commission: "70000" },
+            { brand: "Toyota", model: "Aqua G-Sports 2014", price: "4950000", details: "104,000 km • Push Start Gs", location: "Kalutara", notes: "Full bodykit, leather bucket seats, customized alloy wheels.", image: "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?auto=format&fit=crop&w=600&q=80", ownerContact: "0727778889", commission: "50000" },
+            { brand: "Mitsubishi", model: "Montero Sport 2012", price: "11500000", details: "140,000 km • 4WD Automatic", location: "Matara", notes: "Sunroof, leather electric seats, sound system upgraded.", image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=600&q=80", ownerContact: "0765554443", commission: "150000" },
+            { brand: "Mercedes-Benz", model: "C200 AMG Line 2016", price: "16800000", details: "58,000 km • Premium Plus", location: "Colombo", notes: "Panroof, Burmester sound system, agents maintained throughout.", image: "https://images.unsplash.com/photo-1617531653332-bd46c24f2068?auto=format&fit=crop&w=600&q=80", ownerContact: "0774441112", commission: "250000" },
+            { brand: "BMW", model: "320i Luxury 2014", price: "9200000", details: "78,000 km • TwinPower Turbo", location: "Negombo", notes: "Beige leather interior, memory seats, excellent running condition.", image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=600&q=80", ownerContact: "0712223334", commission: "100000" },
+            { brand: "Toyota", model: "Axio WxB 2017", price: "6975000", details: "72,000 km • Hybrid LED", location: "Galle", notes: "Black interior, safety sense radar active, original multi-setup.", image: "https://images.unsplash.com/photo-1617814076367-b759c7d7e738?auto=format&fit=crop&w=600&q=80", ownerContact: "0779998887", commission: "65000" },
+            { brand: "Honda", model: "Fit GP5 Comfort 2014", price: "4450000", details: "95,000 km • Cruise Control", location: "Kadawatha", notes: "All service logs available, hybrid system scanning done recently.", image: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80", ownerContact: "0704445556", commission: "40000" }
+        ];
+
+        function verifyStudent(event) {
+            event.preventDefault();
+            if (document.getElementById('student-key').value === STUDENT_PASSKEY) {
+                document.getElementById('lock-screen').classList.add('hidden');
+                document.getElementById('main-portal').classList.remove('hidden');
+                document.body.className = "bg-zinc-50 min-h-screen flex flex-col";
+                buildGrid(localInventoryArray);
+            } else {
+                alert("❌ Invalid Student Access Key!");
+            }
+        }
+
+        function toggleAdminMode() {
+            if(!IS_ADMIN) {
+                var key = prompt("Enter Dynamic Admin Secret Key:");
+                if(key === ADMIN_PIN) {
+                    IS_ADMIN = true;
+                    document.getElementById('admin-form-section').classList.remove('hidden');
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                    alert("❌ Invalid Admin Key!");
+                }
+            } else {
+                closeAdminForm();
+            }
+        }
+
+        function closeAdminForm() {
+            IS_ADMIN = false;
+            document.getElementById('admin-form-section').classList.add('hidden');
+        }
+
+        function formatLKR(val) {
+            return parseInt(String(val).replace(/,/g, '')).toLocaleString('en-US');
+        }
+
+        // FULLY CLEANED GRID BUILDER WITHOUT ANY BACKTICKS
+        function buildGrid(dataList) {
+            var grid = document.getElementById('inventory-grid');
+            grid.innerHTML = ""; 
+
+            for (var i = 0; i < dataList.length; i++) {
+                var vehicle = dataList[i];
+                var imgId = "v-img-" + i;
+                var fPrice = formatLKR(vehicle.price);
+                var fComm = formatLKR(vehicle.commission);
+                
+                var cleanPhone = vehicle.ownerContact.replace(/[^0-9]/g, '');
+                if(cleanPhone.indexOf('0') === 0) {
+                    cleanPhone = '94' + cleanPhone.substring(1);
+                }
+
+                var cardHTML = 
+                    '<div class="theme-card rounded-2xl shadow-md flex flex-col overflow-hidden hover:shadow-2xl transition-all duration-300 bg-white">' +
+                        '<div class="relative h-48 bg-zinc-900">' +
+                            '<img id="' + imgId + '" src="' + vehicle.image + '" alt="Vehicle" class="w-full h-full object-cover">' +
+                            '<span class="absolute top-3 left-3 bg-black/80 backdrop-blur-md text-white text-xs font-bold px-3 py-1 rounded-full shadow flex items-center gap-1">' +
+                                '<i class="fas fa-map-marker-alt text-red-500"></i> ' + vehicle.location +
+                            '</span>' +
+                            '<button onclick="downloadImage(\'' + imgId + '\', \'' + vehicle.brand + '-' + vehicle.model + '\')" class="absolute bottom-3 right-3 bg-red-600 hover:bg-black text-white text-xs p-2.5 rounded-xl transition shadow-lg flex items-center gap-1 font-bold">' +
+                                '<i class="fas fa-download"></i> Save Photo' +
+                            '</button>' +
+                        '</div>' +
+                        '<div class="p-5 flex-1 flex flex-col justify-between space-y-4 bg-white">' +
+                            '<div class="space-y-2">' +
+                                '<div class="flex justify-between items-start gap-2">' +
+                                    '<div class="min-w-0 flex-1">' +
+                                        '<span class="text-xs font-black text-red-600 uppercase tracking-widest block truncate">' + vehicle.brand + '</span>' +
+                                        '<h3 class="text-base font-black text-black tracking-tight leading-tight break-words">' + vehicle.model + '</h3>' +
+                                    '</div>' +
+                                    '<button onclick="copyAdText(\'' + vehicle.brand + '\', \'' + vehicle.model + '\', \'' + fPrice + '\', \'' + vehicle.details + '\', \'' + vehicle.location + '\', \'' + vehicle.notes + '\')" class="bg-zinc-100 hover:bg-black hover:text-white text-zinc-700 text-xs px-2.5 py-1.5 rounded-xl border font-bold transition flex items-center gap-1 whitespace-nowrap shrink-0">' +
+                                        '<i class="far fa-copy"></i> Copy Ad' +
+                                    '</button>' +
+                                '</div>' +
+                                '<p class="text-xs text-zinc-600 font-medium"><i class="fas fa-sliders-h text-red-500 mr-1"></i> ' + vehicle.details + '</p>' +
+                                '<div class="bg-zinc-50 p-3 rounded-xl text-xs text-zinc-600 border border-zinc-100 leading-relaxed max-h-24 overflow-y-auto"><strong>Dealer Notes:</strong> ' + vehicle.notes + '</div>' +
+                            '</div>' +
+                            '<div class="pt-3 border-t border-zinc-100 space-y-3">' +
+                                '<div class="grid grid-cols-2 gap-2 bg-zinc-50 p-2.5 rounded-xl border border-zinc-200">' +
+                                    '<div class="min-w-0">' +
+                                        '<span class="text-[10px] font-bold uppercase text-zinc-400 block truncate">Vehicle Price</span>' +
+                                        '<span class="text-xs sm:text-sm font-black text-black block truncate">LKR ' + fPrice + '</span>' +
+                                    '</div>' +
+                                    '<div class="text-right border-l pl-2 border-zinc-200 min-w-0">' +
+                                        '<span class="text-[10px] font-bold uppercase text-red-500 block truncate">Broker Comm</span>' +
+                                        '<span class="text-xs sm:text-sm font-black text-red-600 block truncate">LKR ' + fComm + '</span>' +
+                                    '</div>' +
+                                '</div>' +
+                                tapDetails(cleanPhone, vehicle.ownerContact) +
+                            '</div>' +
+                        '</div>' +
+                    '</div>';
+                
+                grid.insertAdjacentHTML('beforeend', cardHTML);
+            }
+        }
+
+        // FIXED BUTTON GENERATOR: SECURED MOBILE FLEX-ROW
+        function tapDetails(cleanPhone, rawPhone) {
+            return '<div class="flex flex-row gap-2 w-full justify-between items-stretch">' +
+                '<a href="tel:' + rawPhone + '" class="flex-1 bg-black hover:bg-zinc-800 text-white text-center font-black py-3 rounded-xl text-[11px] uppercase tracking-wider flex items-center justify-center gap-1 transition px-1 whitespace-nowrap min-w-0">' +
+                    '<i class="fas fa-phone-alt text-red-500 text-xs shrink-0"></i> <span class="truncate">Call Owner</span>' +
+                '</a>' +
+                '<a href="https://api.whatsapp.com/send?phone=' + cleanPhone + '&text=Hi, I saw your asset on SmartBroker.lk" target="_blank" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white text-center font-black py-3 rounded-xl text-[11px] uppercase tracking-wider flex items-center justify-center gap-1 transition px-1 whitespace-nowrap min-w-0">' +
+                    '<i class="fab fa-whatsapp text-sm shrink-0"></i> <span class="truncate">WhatsApp</span>' +
+                '</a>' +
+            '</div>';
+        }
+
+        function secureAddVehicle(event) {
+            event.preventDefault(); 
+            var brand = document.getElementById('brand').value;
+            var model = document.getElementById('model').value;
+            var price = document.getElementById('price').value;
+            var details = document.getElementById('details').value;
+            var location = document.getElementById('location').value;
+            var ownerContact = document.getElementById('owner-contact').value;
+            var commission = document.getElementById('commission').value;
+            var notes = document.getElementById('notes').value;
+            var imageInput = document.getElementById('image-input');
+
+            var defaultImg = "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80";
+
+            var newObj = {
+                brand: brand, model: model, price: price, details: details,
+                location: location, notes: notes, image: defaultImg,
+                ownerContact: ownerContact, commission: commission
+            };
+
+            if (imageInput.files && imageInput.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    newObj.image = e.target.result;
+                    localInventoryArray.unshift(newObj);
+                    buildGrid(localInventoryArray);
+                    document.getElementById('vehicle-form').reset();
+                    closeAdminForm();
+                };
+                reader.readAsDataURL(imageInput.files[0]);
+            } else {
+                localInventoryArray.unshift(newObj);
+                buildGrid(localInventoryArray);
+                document.getElementById('vehicle-form').reset();
+                closeAdminForm();
+            }
+        }
+
+        function filterVehicles() {
+            var input = document.getElementById('search-bar').value.toLowerCase();
+            var filtered = localInventoryArray.filter(function(v) {
+                return v.brand.toLowerCase().indexOf(input) > -1 || 
+                       v.model.toLowerCase().indexOf(input) > -1 || 
+                       v.location.toLowerCase().indexOf(input) > -1;
+            });
+            buildGrid(filtered);
+        }
+
+        function downloadImage(imgId, fileName) {
+            var imgElement = document.getElementById(imgId);
+            var link = document.createElement('a');
+            link.href = imgElement.src;
+            link.download = fileName + "-SmartBroker.jpg";
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function copyAdText(brand, model, price, details, location, notes) {
+            var txt = "🔥 VEHICLE FOR SALE AVAILABLE via SmartBroker.lk 🔥\n\n" +
+                      "🚘 Asset: " + brand + " " + model + "\n" +
+                      "💰 Market Price: LKR " + price + "\n" +
+                      "📍 Location: " + location + "\n" +
+                      "⚙️ Specs: " + details + "\n" +
+                      "✨ Notes: " + notes;
+            navigator.clipboard.writeText(txt).then(function() {
+                alert("📋 Marketing copy copied!");
+            });
+        }
+    </script>
+</body>
+</html>
